@@ -1,0 +1,32 @@
+name: Leetcode-daily-push
+
+on:
+  schedule:
+  # 由于8小时时差的原因, 15+8 == 23.58左右, 加上延迟和误差, 大约是在00:05左右执行完成
+  - cron: "58 15 * * *"
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9.1
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9.1
+
+    - name: install requirements
+      run: pip install requests
+
+    - name: Run Scripts
+      env:
+        PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        SERVERCHAN_TOKEN: ${{ secrets.SERVERCHAN_TOKEN }}
+        DING_ACCESS_TOKEN: ${{ secrets.DING_ACCESS_TOKEN }}
+        DING_SECRET:  ${{ secrets.DING_SECRET }}
+      run: python leetcode_runner.py
